@@ -196,6 +196,9 @@ class RaceCarEnv(gym.Env):
         return False
 
     def _get_reward(self, state, obs):
+        reward = 0.0
+        for i in range(self.num_agents):
+            reward += obs['linear_vels_x'][i]
         return self.timestep
 
     def step(self, action):
