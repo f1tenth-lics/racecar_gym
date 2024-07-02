@@ -87,7 +87,7 @@ class RaceCar:
         self.max_steering_angle = max_steering_angle
         self.laser_clip = laser_clip
 
-        self.odom = np.zeros((5,), dtype=np.float32)
+        self.odom = np.zeros((6,), dtype=np.float32)
         self.laser = np.full((1080,), laser_clip, dtype=np.float32)
         self.collision = False
 
@@ -112,7 +112,7 @@ class RaceCar:
         pose = msg.pose.pose
         twist = msg.twist.twist
         psi = quaternion_to_psi(pose.orientation)
-        self.odom = (pose.position.x, pose.position.y, psi, twist.linear.x, twist.angular.z)
+        self.odom = (pose.position.x, pose.position.y, psi, twist.linear.x, twist.linear.y, twist.angular.z)
 
     def _laser_callback(self, msg):
         """

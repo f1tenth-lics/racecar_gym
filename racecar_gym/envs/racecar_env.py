@@ -60,7 +60,7 @@ class RaceCarEnv(gym.Env):
     """
     metadata = {'render.modes': ['human', 'human_fast']}
 
-    def __init__(self, seed=12345, map='berlin', params=None, num_agents=1, timestep=0.01):
+    def __init__(self, seed=12345, map='berlin', params=None, num_agents=1, timestep=0.01, gui=True, rviz=False):
         # Initialize parameters
         if params is None:
             params = {
@@ -95,7 +95,8 @@ class RaceCarEnv(gym.Env):
             'roslaunch',
             os.path.join(helper_path, 'launch', 'simulator.launch'),
             'map:=' + self.map,
-            'gui:=true',
+            'gui:=true' if gui else 'gui:=false',
+            'rviz:=true' if rviz else 'rviz:=false',
             'teleop:=false',
         ])
         time.sleep(1)
@@ -166,7 +167,7 @@ class RaceCarEnv(gym.Env):
             poses_theta.append(odom[2])
             linear_vels_x.append(odom[3])
             linear_vels_y.append(odom[4])
-            ang_vels_z.append(0.0)
+            ang_vels_z.append(odom[5])
 
             collisions.append(self.racecars[i].collision)
 
