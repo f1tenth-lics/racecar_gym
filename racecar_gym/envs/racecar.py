@@ -23,6 +23,7 @@
 """
 Author: Joshua J. Damanik
 """
+import time
 
 import rospy
 import numpy as np
@@ -100,6 +101,7 @@ class RaceCar:
         rospy.Subscriber(self.laser_topic, LaserScan, self._laser_callback)
         rospy.Subscriber(self.collision_topic, Bool, self._collision_callback)
         self.command_pub = rospy.Publisher(self.command_topic, AckermannDriveStamped, queue_size=1)
+        self.gmcl_pose_pub = rospy.Publisher(f'/{robot_name}/initialpose', PoseWithCovarianceStamped, queue_size=1)
         self.reset_odom_srv = rospy.ServiceProxy(f'/{robot_name}/set_pose', SetPose)
 
     def _odom_callback(self, msg):
@@ -167,3 +169,8 @@ class RaceCar:
         pose.pose.pose.orientation.w = np.cos(angle / 2)
 
         self.reset_odom_srv(pose)
+
+        time.sleep(0.1)
+
+        pose.header.frame_id = '/map'
+        self.gmcl_pose_pub.publish(pose)

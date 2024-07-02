@@ -60,7 +60,7 @@ class RaceCarEnv(gym.Env):
     """
     metadata = {'render.modes': ['human', 'human_fast']}
 
-    def __init__(self, seed=12345, map='berlin', params=None, num_agents=1, timestep=0.01, gui=True, rviz=False):
+    def __init__(self, seed=12345, map='berlin', params=None, num_agents=1, timestep=0.01, gui=True, rviz=False, teleop_id=None):
         # Initialize parameters
         if params is None:
             params = {
@@ -110,7 +110,8 @@ class RaceCarEnv(gym.Env):
                 'robot_name:=racecar' + str(i),
                 'color:=' + colors[i % 3],
                 'init_x:=' + str(self.start_xs[i]),
-                'init_y:=' + str(self.start_ys[i])
+                'init_y:=' + str(self.start_ys[i]),
+                'teleop:=true' if teleop_id == i else 'teleop:=false',
             ]))
         time.sleep(5)
 
