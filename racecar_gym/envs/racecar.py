@@ -27,10 +27,12 @@ Author: Joshua J. Damanik
 import rospy
 import numpy as np
 
-from std_msgs.msg import Header, Bool
 from nav_msgs.msg import Odometry
+from std_msgs.msg import Header, Bool
 from sensor_msgs.msg import LaserScan
+from robot_localization.srv import SetPose
 from ackermann_msgs.msg import AckermannDriveStamped
+from geometry_msgs.msg import PoseWithCovarianceStamped
 
 from .utils import quaternion_to_psi
 
@@ -98,6 +100,7 @@ class RaceCar:
         rospy.Subscriber(self.laser_topic, LaserScan, self._laser_callback)
         rospy.Subscriber(self.collision_topic, Bool, self._collision_callback)
         self.command_pub = rospy.Publisher(self.command_topic, AckermannDriveStamped, queue_size=1)
+        self.reset_odom_srv = rospy.ServiceProxy(f'/{robot_name}/set_pose', SetPose)
 
     def _odom_callback(self, msg):
         """
@@ -143,3 +146,24 @@ class RaceCar:
         command.drive.speed = speed * self.max_speed
         command.drive.steering_angle = steering_angle * self.max_steering_angle
         self.command_pub.publish(command)
+
+    def reset_odom(self, x=0.0, y=0.0, angle=0.0):
+        """
+        Resets the odometry of the car.
+
+        Args:
+            x (float): The x-coordinate of the car.
+            y (float): The y-coordinate of the car.
+            angle (float): The orientation of the car in radians.
+        """
+        pose = PoseWithCovarianceStamped()
+        pose.header.frame_id = self.robot_name + '/odom'
+        pose.pose.pose.position.x = x
+        pose.pose.pose.position.y = y
+        pose.pose.pose.position.z = 0
+        pose.pose.pose.orientation.x = 0
+        pose.pose.pose.orientation.y = 0
+        pose.pose.pose.orientation.z = np.sin(angle / 2)
+        pose.pose.pose.orientation.w = np.cos(angle / 2)
+
+        self.reset_odom_srv(pose)

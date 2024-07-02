@@ -291,8 +291,10 @@ class RaceCarEnv(gym.Env):
 
         # Call reset to simulator
         self._reset_sim()
+        time.sleep(1)
 
         for i in range(self.num_agents):
+            self.racecars[i].reset_odom(self.start_xs[i], self.start_ys[i], self.start_thetas[i])
             self.racecars[i].collision = False
 
         # Get observations
