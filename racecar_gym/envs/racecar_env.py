@@ -197,6 +197,7 @@ class RaceCarEnv(gym.Env):
         return False
 
     def _get_reward(self, state, obs):
+        
         return self.timestep
 
     def step(self, action):
@@ -214,6 +215,7 @@ class RaceCarEnv(gym.Env):
         """
         # Call simulation step
         for i in range(self.num_agents):
+            # speed and steering angle.
             self.racecars[i].set_velocity(action[i][0], action[i][1])
 
         self.rate.sleep()
@@ -285,11 +287,11 @@ class RaceCarEnv(gym.Env):
             self.start_xs = poses[:, 0]
             self.start_ys = poses[:, 1]
             self.start_thetas = poses[:, 2]
-
+        
         # Stop racecars
         self._stop_racecar()
         time.sleep(1)
-
+        
         # Call reset to simulator
         self._reset_sim()
         time.sleep(1)
